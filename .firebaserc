@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "order-taking-project-da2c0"
-  }
+    "default": "order-taking-app-2b403",
+    "order-taking-app": "order-taking-app-2b403"
+  },
+  "targets": {},
+  "etags": {}
 }

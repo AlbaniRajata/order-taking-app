@@ -1,25 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Button, ChakraProvider } from '@chakra-ui/react';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Root } from './pages/root';
-import { Menu } from './pages/menu';
-import { Item } from './pages/item';
-import { Cart } from './pages/cart';
-import { Info } from './pages/info';
-import { Checkout } from './pages/checkout';
-import { ThankYou } from './pages/thankyou';
-import { Admin } from './pages/admin';
+import ReactDOM from "react-dom/client";
+import { ChakraProvider } from "@chakra-ui/react";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Root } from "./pages/root";
+import { Menu } from "./pages/menu";
+import { Item } from "./pages/item";
+import { Cart } from "./pages/cart";
+import { Info } from "./pages/info";
+import { Checkout } from "./pages/checkout";
+import { ThankYou } from "./pages/thankyou";
+import { Admin } from "./pages/admin";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Root />,
     children: [
       {
@@ -27,29 +26,29 @@ const router = createBrowserRouter([
         element: <Menu />,
       },
       {
-        path: 'item/:id',
+        path: "item/:id",
         element: <Item />,
       },
       {
-        path: 'cart',
+        path: "cart",
         element: <Cart />,
       },
       {
-        path: 'info',
+        path: "info",
         element: <Info />,
       },
       {
-        path: 'checkout',
+        path: "checkout",
         element: <Checkout />,
       },
       {
-        path: 'thankYou',
+        path: "thankYou",
         element: <ThankYou />,
       },
     ],
   },
   {
-    path: 'admin/*',
+    path: "admin/*",
     element: <Admin />,
   },
 ]);

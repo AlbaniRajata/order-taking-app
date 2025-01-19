@@ -19,4 +19,4 @@ export const Admin = () => {
             <Resource name="items" list={ListGuesser} />
         </RAdmin>
     );
-};
+}; 
