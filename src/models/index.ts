@@ -1,5 +1,11 @@
 export type PaymentMethodType = 'cash' | 'card' | 'debitphone';
 export type OrderStatus = 'pending' | 'confirmed' | 'cancelled' | 'cancelled';
+export type ImageType = {
+    src: string;
+    title: string;
+};
+
+export const getRandomImage = () => `https://picsum.photos/200/300?random=${Math.random()}`;
 
 export interface IRestaurant {
     name: string;
@@ -15,14 +21,14 @@ export interface ICategory {
     createdate: string;
     lastupdate: string;
     createdby: string;
-    image: string;
+    image?: ImageType;
     title: string;
     description: string;
 }
 
 export interface IItem {
     id: string;
-    image: string;
+    image?: ImageType;
     price: number;
     label: string;
     category: string;

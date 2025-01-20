@@ -11,6 +11,7 @@ import { Info } from "./pages/info";
 import { Checkout } from "./pages/checkout";
 import { ThankYou } from "./pages/thankyou";
 import { Admin } from "./pages/admin";
+import { DataProvider } from "./components/data-provider";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -54,9 +55,11 @@ const router = createBrowserRouter([
 ]);
 
 root.render(
-    <ChakraProvider>
+  <ChakraProvider>
+    <DataProvider>
       <RouterProvider router={router} />
-    </ChakraProvider>
+    </DataProvider>
+  </ChakraProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

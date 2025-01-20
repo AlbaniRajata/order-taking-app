@@ -1,74 +1,86 @@
-import { 
-    Create, 
-    Datagrid, 
-    DateField, 
-    Edit, 
+import {
+    Create,
+    Datagrid,
+    DateField,
+    Edit,
     ImageField,
-    List, 
-    required, 
-    ResourceProps, 
-    SimpleForm, 
-    TextField, 
+    List,
+    NumberField,
+    NumberInput,
+    required,
+    ResourceProps,
+    SimpleForm,
+    TextField,
     TextInput,
     Toolbar,
     SaveButton,
     useRedirect,
-    useNotify
-} from 'react-admin';
-import { MdOutlineCategory } from 'react-icons/md';
+    useNotify,
+} from "react-admin";
+import { MdOutlineCategory } from "react-icons/md";
 
 const getRandomImage = () => `https://picsum.photos/200/300?random=${Math.random()}`;
 
-const CustomToolbar = () => {
-    const redirect = useRedirect();
-    const notify = useNotify();
-
-    const onSave = () => {
-        notify('Category successfully saved', { type: 'info' });
-        redirect('list', 'category');
-    };
-
-    return (
-        <Toolbar>
-            <SaveButton onClick={onSave} />
-        </Toolbar>
-    );
-};
+const CustomToolbar = () => (
+    <Toolbar>
+        <SaveButton />
+    </Toolbar>
+);
 
 const CategoryForm = () => {
     return (
         <SimpleForm sanitizeEmptyValues toolbar={<CustomToolbar />}>
-            <ImageField source="image" label="random image" record={{ image: getRandomImage() }} />
-            <TextInput source="title" validate={[required()]} fullWidth/>
-            <TextInput source="description" fullWidth/>
+            <ImageField source="image" label="Random Image" record={{ image: getRandomImage() }} />
+            <TextInput source="title" validate={[required()]} fullWidth />
+            <TextInput source="description" fullWidth />
         </SimpleForm>
     );
 };
 
-const CategoryCreate = () => (
-    <Create>
-        <CategoryForm/>
-    </Create>
-);
+const CategoryCreate = () => {
+    const notify = useNotify();
+    const redirect = useRedirect();
 
-const CategoryEdit = () => (
-    <Edit>
-        <CategoryForm/>
-    </Edit>
-);
+    const onSuccess = () => {
+        notify("Category successfully saved", { type: "info" });
+        redirect("list", "category");
+    };
+
+    return (
+        <Create mutationOptions={{ onSuccess }}>
+            <CategoryForm />
+        </Create>
+    );
+};
+
+const CategoryEdit = () => {
+    const notify = useNotify();
+    const redirect = useRedirect();
+
+    const onSuccess = () => {
+        notify("Category successfully updated", { type: "info" });
+        redirect("list", "category");
+    };
+
+    return (
+        <Edit mutationOptions={{ onSuccess }}>
+            <CategoryForm />
+        </Edit>
+    );
+};
 
 const CategoryList = () => (
     <List>
         <Datagrid rowClick="edit">
-            <ImageField 
-                source="image" 
-                label="Random Image" 
-                record={{ image: getRandomImage() }} 
+            <ImageField
+                source="image"
+                label="Random Image"
+                record={{ image: getRandomImage() }}
             />
             <TextField source="title" />
             <TextField source="description" />
-            <DateField source="createdate" showTime label="Created At"/>
-            <DateField source="lastupdate" showTime label="Updated At"/>
+            <DateField source="createdate" showTime label="Created At" />
+            <DateField source="lastupdate" showTime label="Updated At" />
         </Datagrid>
     </List>
 );

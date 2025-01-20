@@ -46,7 +46,7 @@ export const Root = () => {
     return (
         <Box>
             <Navbar />
-            <Container minH="100vh">
+            <Container minH="100vh" p={0}>
                 <Outlet />
             </Container>
         </Box>
