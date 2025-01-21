@@ -62,7 +62,7 @@ export interface IOrder {
     reason?: string;
     pickupTime: string;
     paymentMethod: PaymentMethodType[];
-    status?: OrderStatus[];
+    status?: OrderStatus;
     subTotal: number;
     total: number;
 }

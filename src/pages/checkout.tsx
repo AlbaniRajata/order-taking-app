@@ -3,7 +3,6 @@ import {
     AccordionButton,
     AccordionItem,
     AccordionPanel,
-    Box,
     FormControl,
     FormErrorMessage,
     FormLabel,
@@ -19,19 +18,17 @@ import {
   import { useDataProvider } from "../components/data-provider";
   import { calculateOrderTotal } from "../utils/calculation";
   import { PAYMENT_METHODS } from "../utils/constants";
+  import { useNavigate } from "react-router-dom";
   
   export const Checkout = () => {
+    const navigate = useNavigate();
     const { lines, restaurantInfo, checkout } = useDataProvider();
     const { register, handleSubmit, formState } = useForm<IOrder>();
   
     const onSubmit = async (data: IOrder) => {
-        try {
-          const orderId = await checkout(data);
-          alert(`Order successfully placed with ID: ${orderId}`);
-        } catch (error) {
-          alert("Failed to place the order. Please try again.");
-        }
-    };
+        await checkout(data);
+        navigate("/thankyou");
+      };
   
     if (!restaurantInfo) return null;
   

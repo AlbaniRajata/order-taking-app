@@ -8,7 +8,7 @@ import {
 } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
 import { ICategory, IItem, ILine, IOrder, IRestaurant } from "../models";
-import { addDoc, collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 import { signInAnonymously } from "firebase/auth";
 
@@ -103,6 +103,9 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   
       setLines([]);
       setOrder(completeOrder);
+      onSnapshot(doc(db, "orders", docRef.id), (docSnapshot) => {
+        setOrder(docSnapshot.data() as IOrder);
+      });
   
       console.log("Order successfully placed with ID:", docRef.id);
       return docRef.id;
