@@ -44,7 +44,7 @@ export interface IVariant {
     isRequired: boolean;
     allowMultiple: boolean;
     type: string;
-    choice: IChoice[];
+    choices: IChoice[];
 }
 
 export interface IChoice {

@@ -7,22 +7,28 @@ import {
     useState,
 } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
-import { ICategory, IItem, IRestaurant } from "../models";
+import { ICategory, IItem, ILine, IRestaurant } from "../models";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 import { signInAnonymously } from "firebase/auth";
 
 interface IDataProviderContext {
-    restaurantInfo?: IRestaurant;
-    categories: ICategory[];
-    items: IItem[];
-    getItemsByCategory: (categoryId: string) => IItem[];
+  lines: ILine[];
+  restaurantInfo?: IRestaurant;
+  categories: ICategory[];
+  items: IItem[];
+  getItemsByCategory: (categoryId: string) => IItem[];
+  getItemById: (itemId: string) => IItem | undefined;
+  addToCart: (line: ILine) => void;
 }
 
 const DataProviderContext = createContext<IDataProviderContext>({
-    categories: [],
-    items: [],
-    getItemsByCategory: () => [],
+  lines: [],
+  categories: [],
+  items: [],
+  getItemsByCategory: () => [],
+  getItemById: () => undefined,
+  addToCart: () => {},
 });
 
 export const useDataProvider = () => useContext(DataProviderContext);
@@ -34,6 +40,7 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   const [restaurantInfo, setRestaurantInfo] = useState<IRestaurant>();
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [items, setItems] = useState<IItem[]>([]);
+  const [lines, setLines] = useState<ILine[]>([]);
 
   const fetchCategories = async () => {
     const categoriesSnapshot = await getDocs(collection(db, "category"));
@@ -64,16 +71,36 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
     setIsReady(true);
   };
 
+  const getItemById = (itemId: string) => {
+    return items.find(item => item.id === itemId);
+  }
+
   const getItemsByCategory = (category: string): IItem[] => {
     return items.filter(item => item.category === category);
   };
+
+  const addToCart = (line: ILine) => {
+    setLines([...lines, line]);
+  };
+
+  console.log(lines);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <DataProviderContext.Provider value={{ restaurantInfo, categories, items, getItemsByCategory }}>
+    <DataProviderContext.Provider 
+      value={{ 
+        lines,
+        restaurantInfo, 
+        categories, 
+        items, 
+        getItemsByCategory, 
+        getItemById, 
+        addToCart 
+      }}
+    >
       {isReady ? (
         children
       ) : (
