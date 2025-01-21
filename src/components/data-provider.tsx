@@ -7,8 +7,8 @@ import {
     useState,
 } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
-import { ICategory, IItem, ILine, IRestaurant } from "../models";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { ICategory, IItem, ILine, IOrder, IRestaurant } from "../models";
+import { addDoc, collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 import { signInAnonymously } from "firebase/auth";
 
@@ -17,10 +17,12 @@ interface IDataProviderContext {
   restaurantInfo?: IRestaurant;
   categories: ICategory[];
   items: IItem[];
+  order?: IOrder;
   getItemsByCategory: (categoryId: string) => IItem[];
   getItemById: (itemId: string) => IItem | undefined;
   addToCart: (line: ILine) => void;
   removeCartItem: (index: number) => void;
+  checkout: (draftOrder: IOrder) => Promise<string>;
 }
 
 const DataProviderContext = createContext<IDataProviderContext>({
@@ -31,6 +33,7 @@ const DataProviderContext = createContext<IDataProviderContext>({
   getItemById: () => undefined,
   addToCart: () => {},
   removeCartItem: () => {},
+  checkout: () => Promise.resolve(""),
 });
 
 export const useDataProvider = () => useContext(DataProviderContext);
@@ -43,6 +46,7 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [items, setItems] = useState<IItem[]>([]);
   const [lines, setLines] = useState<ILine[]>([]);
+  const [order, setOrder] = useState<IOrder>();
 
   const fetchCategories = async () => {
     const categoriesSnapshot = await getDocs(collection(db, "category"));
@@ -91,6 +95,24 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
 
   console.log(lines);
 
+  const checkout = async (draftOrder: IOrder) => {
+    try {
+      const completeOrder = { ...draftOrder, lines };
+  
+      const docRef = await addDoc(collection(db, "orders"), completeOrder);
+  
+      setLines([]);
+      setOrder(completeOrder);
+  
+      console.log("Order successfully placed with ID:", docRef.id);
+      return docRef.id;
+    } catch (error) {
+      console.error("Error placing order:", error);
+      throw new Error("Failed to place the order. Please try again.");
+    }
+  };
+  
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -106,6 +128,8 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
         getItemById, 
         addToCart,
         removeCartItem,
+        checkout,
+        order,
       }}
     >
       {isReady ? (

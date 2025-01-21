@@ -1,19 +1,30 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import * as admin from "firebase-admin";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {
+  calculateOrderTotal,
+  calculateOrderSubtotal,
+} from "../.././src/utils/calculation";
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+admin.initializeApp();
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+export const PlaceOrder = onCall(async (request) => {
+  if (!request.auth) {
+    return new HttpsError("failed-precondition", "You are not authorized");
+  }
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  const firestore = admin.firestore();
+  const lines = request.data.lines;
+
+  const draft = {
+    ...request.data,
+    status: "pending",
+    createdBy: request.auth.uid,
+    total: calculateOrderTotal(lines, 13),
+    subTotal: calculateOrderSubtotal(lines),
+    pickupTime: admin.firestore.FieldValue.serverTimestamp(),
+    createAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+
+  const order = await firestore.collection("order").add(draft);
+  return {id: order.id, order: draft};
+});
