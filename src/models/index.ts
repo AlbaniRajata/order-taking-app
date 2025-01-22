@@ -7,7 +7,7 @@ export type ImageType = {
     title: string;
 };
 
-export const getRandomImage = () => `https://picsum.photos/200/300?random=${Math.random()}`;
+export const getRandomImage = () => `https://picsum.photos/1000/1000?random=${Math.random()}`;
 
 export interface IRestaurant {
     name: string;

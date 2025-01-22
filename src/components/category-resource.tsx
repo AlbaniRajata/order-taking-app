@@ -17,7 +17,7 @@ import {
 } from "react-admin";
 import { MdOutlineCategory } from "react-icons/md";
 
-const getRandomImage = () => `https://picsum.photos/200/300?random=${Math.random()}`;
+const getRandomImage = () => `https://picsum.photos/1000/1000?random=${Math.random()}`;
 
 const CustomToolbar = () => (
     <Toolbar>
