@@ -1,68 +1,134 @@
-import { Card, Typography } from "@mui/material";
-import { 
-    CheckboxGroupInput, 
-    SimpleForm, 
-    TextInput, 
-    TimeInput, 
-    useNotify,
-    ResourceProps 
-} from "react-admin";
-import { PAYMENT_METHODS } from "../utils/constants";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
-import { useEffect, useState } from "react";
+import {
+    Box,
+    Flex,
+    Heading,
+    Image,
+    List,
+    ListIcon,
+    ListItem,
+    Text,
+    Divider,
+  } from "@chakra-ui/react";
+  import {
+    BsClock,
+    BsCashCoin,
+    BsFillPinMapFill,
+    BsTelephone,
+    BsArrowRightSquare,
+  } from "react-icons/bs";
+  
+  import { useDataProvider } from "../components/data-provider";
+  import { PAYMENT_METHODS } from "../utils/constants";
+  import moment from "moment";
+import { ResourceProps } from "react-admin";
 import { MdOutlineInfo } from "react-icons/md";
-
-export const Info = () => {
-    const notify = useNotify();
-    const restaurantRef = doc(db, 'restaurant', 'info');
-    const [defaultValues, setDefaultValues] = useState<any>();
-
-    const handleSubmit = async (data: any) => {
-        await setDoc(restaurantRef, data);
-        notify('Restaurant information updated', { type: 'success' });
-    };
-
-    const fetchData = async () => {
-        const snapshot = await getDoc(restaurantRef);
-        setDefaultValues(snapshot.data() || {});
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    if (!defaultValues) return null;
-
-    return (
-        <div style={{ marginTop: 20, marginLeft: 16, marginRight: 16, marginBottom: 20 }}>
-            <Card style={{ padding: 16 }}>
-                <SimpleForm 
-                    defaultValues={{
-                        ...defaultValues,
-                        openingTime: defaultValues.openingTime?.toDate(),
-                        closingTime: defaultValues.closingTime?.toDate(),
-                    }}
-                    sanitizeEmptyValues
-                    onSubmit={handleSubmit}
+  
+  export const Info = () => {
+    const { restaurantInfo } = useDataProvider();
+  
+    if (!restaurantInfo) return null;
+  
+    const items = [
+      {
+        icon: <BsClock />,
+        label: "Opening Hours",
+        children: (
+          <Flex px={4} py={2} justify="space-between">
+            <Text fontWeight="medium" color="gray.600">
+              Everyday
+            </Text>
+            <Text fontWeight="bold" color="blue.600">
+              {moment(restaurantInfo.openingTime.toDate()).format("LT")} -{" "}
+              {moment(restaurantInfo.closingTime.toDate()).format("LT")}
+            </Text>
+          </Flex>
+        ),
+      },
+      {
+        icon: <BsCashCoin />,
+        label: "Payment Methods",
+        children: (
+          <Flex px={4} py={2} direction="column" gap={2}>
+            <List spacing={2}>
+              {restaurantInfo.paymentMethods.map((method, index) => (
+                <ListItem
+                  key={index}
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  fontWeight="medium"
+                  color="gray.600"
                 >
-                    <TextInput source="name" label="Name" fullWidth />
-                    <TextInput source="address" label="Address" fullWidth />
-                    <TextInput source="phone" label="Phone" fullWidth />
-                    <TimeInput source="openingTime" label="Opening Time" fullWidth />
-                    <TimeInput source="closingTime" label="Closing Time" fullWidth />
-                    <CheckboxGroupInput 
-                        source="paymentMethods" 
-                        choices={PAYMENT_METHODS} 
-                        label="Payment Methods" 
-                    />
-                </SimpleForm>
-            </Card>
-        </div>
-    ); 
-};
-
-export const InfoProps: ResourceProps = {
+                  <ListIcon as={BsArrowRightSquare} color="green.500" />
+                  {PAYMENT_METHODS.find((m) => m.id === method)?.name}
+                </ListItem>
+              ))}
+            </List>
+          </Flex>
+        ),
+      },
+      {
+        icon: <BsFillPinMapFill />,
+        label: "Address",
+        children: (
+          <Flex px={4} py={2} direction="column">
+            <Text fontWeight="medium" color="gray.600">
+              {restaurantInfo.address}
+            </Text>
+          </Flex>
+        ),
+      },
+      {
+        icon: <BsTelephone />,
+        label: "Phone",
+        children: (
+          <Flex px={4} py={2} direction="column">
+            <Text fontWeight="medium" color="blue.600">
+              {restaurantInfo.phone}
+            </Text>
+          </Flex>
+        ),
+      },
+    ];
+  
+    return (
+      <Box bg="gray.50" p={4} rounded="md" shadow="sm">
+        <Image
+          src="restaurant.jpg"
+          w="100%"
+          h={280}
+          objectFit="cover"
+          rounded="md"
+          mb={6}
+        />
+        {items.map((item, index) => (
+          <Flex direction="column" mb={6} key={index}>
+            <Flex
+              align="center"
+              gap={4}
+              bg="gray.100"
+              p={3}
+              rounded="md"
+              shadow="sm"
+            >
+              <Box fontSize="1.5rem" color="blue.500">
+                {item.icon}
+              </Box>
+              <Heading as="h2" fontSize="lg" fontWeight="bold" color="gray.700">
+                {item.label}
+              </Heading>
+            </Flex>
+            <Box bg="white" mt={2} rounded="md" shadow="sm" p={4}>
+              {item.children}
+            </Box>
+          </Flex>
+        ))}
+        <Divider />
+      </Box>
+    );
+  };
+  
+  export const InfoProps: ResourceProps = {
     name: 'info',
     list: Info,
     icon: MdOutlineInfo,

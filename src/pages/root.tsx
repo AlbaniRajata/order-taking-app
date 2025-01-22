@@ -6,7 +6,7 @@ import { useDataProvider } from "../components/data-provider";
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { lines } = useDataProvider();
+    const { lines, restaurantInfo } = useDataProvider();
     const hasCartItems = lines.length > 0;
 
     return (
@@ -22,7 +22,7 @@ const Navbar = () => {
                             }}
                         />
                     )}
-                    <Heading fontSize={16}>Name</Heading>
+                    <Heading fontSize={16}>{restaurantInfo?.name}</Heading>
                 </Flex>
                 <Flex alignItems="center" gap={2}>
                     <IconButton 

@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type PaymentMethodType = 'cash' | 'card' | 'debitphone';
 export type OrderStatus = 'pending' | 'confirmed' | 'cancelled';
 export type ImageType = {
@@ -11,8 +13,8 @@ export interface IRestaurant {
     name: string;
     address: string;
     phone: string;
-    closingTime: string;
-    openingTime: string;
+    closingTime: Timestamp;
+    openingTime: Timestamp;
     paymentMethods: PaymentMethodType[]
 }
 
