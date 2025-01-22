@@ -1,5 +1,5 @@
 export type PaymentMethodType = 'cash' | 'card' | 'debitphone';
-export type OrderStatus = 'pending' | 'confirmed' | 'cancelled' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'cancelled';
 export type ImageType = {
     src: string;
     title: string;
@@ -21,7 +21,7 @@ export interface ICategory {
     createdate: string;
     lastupdate: string;
     createdby: string;
-    image?: ImageType;
+    image: ImageType;
     title: string;
     description: string;
 }

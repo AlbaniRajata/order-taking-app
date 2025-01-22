@@ -5,8 +5,6 @@ import {
     Edit,
     ImageField,
     List,
-    NumberField,
-    NumberInput,
     required,
     ResourceProps,
     SimpleForm,

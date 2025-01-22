@@ -88,15 +88,13 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({ children })
     try {
       const completeOrder = { ...draftOrder, lines, status: "pending" as OrderStatus };
   
-      // Add order to Firestore
       const docRef = await addDoc(collection(db, "orders"), completeOrder);
   
-      // Save the ID and order to context
       setLines([]);
-      setOrder({ ...completeOrder, id: docRef.id }); // Save ID here
+      setOrder({ ...completeOrder, id: docRef.id });
   
       onSnapshot(doc(db, "orders", docRef.id), (docSnapshot) => {
-        setOrder({ ...docSnapshot.data(), id: docRef.id } as IOrder); // Save ID in snapshot
+        setOrder({ ...docSnapshot.data(), id: docRef.id } as IOrder); 
       });
   
       return docRef.id;
