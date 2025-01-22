@@ -53,6 +53,7 @@ export interface IChoice {
 }
 
 export interface IOrder {
+    id?: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -65,7 +66,8 @@ export interface IOrder {
     status?: OrderStatus;
     subTotal: number;
     total: number;
-}
+  }
+  
 
 export interface ILine {
     label: string;

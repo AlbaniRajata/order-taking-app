@@ -25,6 +25,6 @@ export const PlaceOrder = onCall(async (request) => {
     createAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
-  const order = await firestore.collection("order").add(draft);
+  const order = await firestore.collection("orders").add(draft);
   return {id: order.id, order: draft};
 });

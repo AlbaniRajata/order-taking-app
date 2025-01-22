@@ -1,14 +1,7 @@
-import {
-    FunctionComponent,
-    PropsWithChildren,
-    createContext, 
-    useContext, 
-    useEffect, 
-    useState,
-} from "react";
+import { FunctionComponent, PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
-import { ICategory, IItem, ILine, IOrder, IRestaurant } from "../models";
-import { addDoc, collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { ICategory, IItem, ILine, IOrder, IRestaurant, OrderStatus } from "../models";
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, setDoc } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 import { signInAnonymously } from "firebase/auth";
 
@@ -38,9 +31,7 @@ const DataProviderContext = createContext<IDataProviderContext>({
 
 export const useDataProvider = () => useContext(DataProviderContext);
 
-export const DataProvider: FunctionComponent<PropsWithChildren> = ({ 
-    children 
-}) => {
+export const DataProvider: FunctionComponent<PropsWithChildren> = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
   const [restaurantInfo, setRestaurantInfo] = useState<IRestaurant>();
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -51,7 +42,7 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   const fetchCategories = async () => {
     const categoriesSnapshot = await getDocs(collection(db, "category"));
     const dbCategories: ICategory[] = [];
-    categoriesSnapshot.forEach(category => 
+    categoriesSnapshot.forEach(category =>
       dbCategories.push(category.data() as ICategory));
     setCategories(dbCategories);
   };
@@ -59,13 +50,13 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   const fetchItems = async () => {
     const itemsSnapshot = await getDocs(collection(db, "item"));
     const dbItems: IItem[] = [];
-    itemsSnapshot.forEach(item => 
+    itemsSnapshot.forEach(item =>
       dbItems.push(item.data() as IItem));
     setItems(dbItems);
   };
 
   const fetchRestaurantInfo = async () => {
-    const restaurantInfoSnapshot = await getDoc(doc(db, "restaurant", "info"))
+    const restaurantInfoSnapshot = await getDoc(doc(db, "restaurant", "info"));
     setRestaurantInfo(restaurantInfoSnapshot.data() as IRestaurant);
   };
 
@@ -93,21 +84,21 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
     setLines(lines.filter((_, i) => i !== index));
   };
 
-  console.log(lines);
-
   const checkout = async (draftOrder: IOrder) => {
     try {
-      const completeOrder = { ...draftOrder, lines };
+      const completeOrder = { ...draftOrder, lines, status: "pending" as OrderStatus };
   
+      // Add order to Firestore
       const docRef = await addDoc(collection(db, "orders"), completeOrder);
   
+      // Save the ID and order to context
       setLines([]);
-      setOrder(completeOrder);
+      setOrder({ ...completeOrder, id: docRef.id }); // Save ID here
+  
       onSnapshot(doc(db, "orders", docRef.id), (docSnapshot) => {
-        setOrder(docSnapshot.data() as IOrder);
+        setOrder({ ...docSnapshot.data(), id: docRef.id } as IOrder); // Save ID in snapshot
       });
   
-      console.log("Order successfully placed with ID:", docRef.id);
       return docRef.id;
     } catch (error) {
       console.error("Error placing order:", error);
@@ -121,27 +112,21 @@ export const DataProvider: FunctionComponent<PropsWithChildren> = ({
   }, []);
 
   return (
-    <DataProviderContext.Provider 
-      value={{ 
+    <DataProviderContext.Provider
+      value={{
         lines,
-        restaurantInfo, 
-        categories, 
-        items, 
-        getItemsByCategory, 
-        getItemById, 
+        restaurantInfo,
+        categories,
+        items,
+        getItemsByCategory,
+        getItemById,
         addToCart,
         removeCartItem,
         checkout,
         order,
       }}
     >
-      {isReady ? (
-        children
-      ) : (
-        <Center height="100vh">
-          <Spinner />
-        </Center>
-      )}
+      {isReady ? children : <Center height="100vh"><Spinner /></Center>}
     </DataProviderContext.Provider>
   );
 };
